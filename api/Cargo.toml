@@ -1,0 +1,8 @@
+[package]
+name = "api"
+version = "0.1.0"
+authors = ["fabianboesiger <boesiger.fabian@outlook.com>"]
+edition = "2018"
+
+[dependencies]
+async-trait = "0.1"

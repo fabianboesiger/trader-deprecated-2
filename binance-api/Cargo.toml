@@ -1,0 +1,9 @@
+[package]
+name = "binance-api"
+version = "0.1.0"
+authors = ["fabianboesiger <boesiger.fabian@outlook.com>"]
+edition = "2018"
+
+[dependencies]
+api = { path = "../api" }
+tokio = { version = "0.2", features = ["full"] }
