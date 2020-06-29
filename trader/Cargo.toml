@@ -6,4 +6,5 @@ edition = "2018"
 
 [dependencies]
 api = { path = "../api" }
-tokio = { version = "0.2", features = ["full"] }
+tokio = { version = "^0.2", features = ["full"] }
+async-trait = "^0.1"

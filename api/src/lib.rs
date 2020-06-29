@@ -2,11 +2,15 @@ mod simulated;
 mod asset;
 mod quantity;
 mod market;
+mod error;
 
 pub use asset::*;
 pub use quantity::*;
 pub use simulated::*;
 pub use market::*;
+pub use error::*;
+
+use std::collections::HashSet;
 
 pub type Monetary = f64;
 
@@ -19,7 +23,6 @@ pub struct Price<'a> {
 pub trait Filter: Send + Sync {
     fn apply(&self, order: Order) -> Result<Order, ()>;
 }
-
 
 pub struct Candlestick<'a> {
     market: &'a Market<'a>,
@@ -40,22 +43,23 @@ pub enum Order<'a> {
 }
 
 #[async_trait::async_trait]
-pub trait Api {
+pub trait Api<'a> {
     const NAME: &'static str = "";
     
-    async fn get_markets<'a>(&mut self) -> Vec<Market<'a>>;
-    async fn next<'a>(&mut self, market: &Market<'a>) -> Candlestick<'a>;
-    async fn last<'a>(&mut self, market: &Market<'a>) -> Candlestick<'a>;
+    async fn update(&'a mut self) -> Result<(), Error>;
+    fn get_markets(&self) -> &HashSet<Market<'a>>;
+    async fn next(&mut self, market: &Market<'a>) -> Candlestick<'a>;
+    async fn last(&mut self, market: &Market<'a>) -> Candlestick<'a>;
     //async fn get_markets<'a>(&mut self) -> Vec<Market<'a>>;
     //async fn get_previous_candlesticks<'a>(&mut self, market: &Market<'a>) -> Vec<Candlestick<'a>>;
     //async fn get_current_candlestick<'a>(&mut self, market: &Market<'a>) -> Candlestick<'a>;
-    async fn order<'a>(&mut self, order: Order<'a>) -> Result<(), Box<dyn std::error::Error>>;
-    async fn order_window<'a>(&mut self, price: Price<'a>, quantity: Quantity<'a>, stop_loss: Quantity<'a>, take_profit: Quantity<'a>) -> Result<(), Box<dyn std::error::Error>> {
+    async fn order(&mut self, order: Order<'a>) -> Result<(), Box<dyn std::error::Error>>;
+    /*async fn order_window(&mut self, price: Price<'a>, quantity: Quantity<'a>, stop_loss: Quantity<'a>, take_profit: Quantity<'a>) -> Result<(), Box<dyn std::error::Error>> {
         self.order(Order::Limit(price, quantity)).await?;
         self.order(Order::StopLoss(price.market, stop_loss)).await?;
         self.order(Order::TakeProfit(price.market, take_profit)).await?;
         Ok(())
-    }
+    }*/
 }
 
 #[cfg(test)]

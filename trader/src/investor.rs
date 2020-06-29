@@ -5,7 +5,7 @@ struct Investor<API>
     where
         API: Api
 {
-    markets: HashMap<MarketKey, 
+    markets: HashMap<MarketKey>, 
     indicators: Vec<Box<dyn Indicator>>,
     traders: Vec<Box<dyn Trader>>,
 }
