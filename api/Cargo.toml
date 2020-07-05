@@ -6,3 +6,6 @@ edition = "2018"
 
 [dependencies]
 async-trait = "^0.1"
+tokio = { version = "^0.2", features = ["full"] }
+tokio-tungstenite = { version = "^0.10", features = ["tls"] }
+futures-core = "^0.3"

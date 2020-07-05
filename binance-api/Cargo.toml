@@ -9,10 +9,11 @@ api = { path = "../api" }
 tokio = { version = "^0.2", features = ["full"] }
 reqwest = { version = "^0.10", features = ["json"] }
 async-trait = "^0.1"
-chrono = "^0.4"
+chrono = { version = "^0.4", features = ["serde"] }
 sha2 = "^0.9"
 hmac = "^0.8"
 hex = "^0.4"
 serde = { version = "^1.0", features = ["derive"] }
-stonks = "^0.2"
-tokio-tungstenite = "^0.10"
+tokio-tungstenite = { version = "^0.10", features = ["tls"] }
+futures = { version = "^0.3" }
+dotenv = "0.15"

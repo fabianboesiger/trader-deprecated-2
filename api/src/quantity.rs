@@ -1,12 +1,14 @@
 use crate::{Asset, Monetary, Price};
+use std::cmp::Ordering;
 use std::ops::{Add, Mul};
 
-pub struct Quantity<'a> {
-    quantity: Monetary,
-    asset: &'a Asset,
+#[derive(Debug, Copy, Clone)]
+pub struct Quantity {
+    pub quantity: Monetary,
+    pub asset: &'static Asset,
 }
 
-impl<'a> Add for Quantity<'a> {
+impl Add for Quantity {
     type Output = Self;
 
     fn add(self, other: Self) -> Self {
@@ -19,12 +21,12 @@ impl<'a> Add for Quantity<'a> {
     }
 }
 
-impl<'a> Mul<Price<'a>> for Quantity<'a> {
+impl Mul<Price> for Quantity {
     type Output = Self;
 
-    fn mul(self, other: Price<'a>) -> Quantity<'a> {
+    fn mul(self, other: Price) -> Quantity {
         assert_eq!(self.asset, other.market.base);
-        
+
         Self {
             quantity: self.quantity * other.price,
             asset: other.market.quote,
@@ -32,3 +34,14 @@ impl<'a> Mul<Price<'a>> for Quantity<'a> {
     }
 }
 
+impl PartialOrd for Quantity {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        self.quantity.partial_cmp(&other.quantity)
+    }
+}
+
+impl PartialEq for Quantity {
+    fn eq(&self, other: &Self) -> bool {
+        self.quantity.eq(&other.quantity)
+    }
+}

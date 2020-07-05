@@ -1,3 +1,1 @@
-pub trait Indicator {
-    
-}
+pub trait Indicator {}

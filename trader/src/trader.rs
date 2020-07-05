@@ -5,11 +5,9 @@ pub trait Trader {
     async fn evaluate<'a>(&mut self, candlestick: Candlestick<'a>) -> Option<Order>;
 }
 
-struct LuaTrader {
-}
+struct LuaTrader {}
 
-impl LuaTrader {
-}
+impl LuaTrader {}
 
 #[async_trait::async_trait]
 impl Trader for LuaTrader {

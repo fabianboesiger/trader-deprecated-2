@@ -1,42 +1,49 @@
-use crate::{Api, Market, Candlestick, Order, Error};
+use crate::{
+    Api, Asset, Candlestick, Error, Interval, Market, Order, OrderError, OrderResponse,
+    Subscription,
+};
+use futures_core::stream::Stream;
 use std::collections::HashSet;
 
-pub struct Simulated<'a, API>
-    where
-        API: Api<'a> + Send + Sync + 'static
+pub struct Simulated<API, S>
+where
+    API: Api<S> + Send + Sync + 'static,
+    S: Stream<Item = Candlestick> + Unpin + Send + Sync + 'static,
 {
     api: API,
-    _phantom: std::marker::PhantomData<&'a API>
+    _phantom: std::marker::PhantomData<S>,
 }
 
-impl<'a, API> Simulated<'a, API>
-    where
-        API: Api<'a> + Send + Sync + 'static
+impl<API, S> Simulated<API, S>
+where
+    API: Api<S> + Send + Sync + 'static,
+    S: Stream<Item = Candlestick> + Unpin + Send + Sync + 'static,
 {
-} 
+}
 
 #[async_trait::async_trait]
-impl<'a, API> Api<'a> for Simulated<'a, API>
-    where
-        API: Api<'a> + Send + Sync + 'static
+impl<API, S> Api<S> for Simulated<API, S>
+where
+    API: Api<S> + Send + Sync + 'static,
+    S: Stream<Item = Candlestick> + Unpin + Send + Sync + 'static,
 {
-    async fn update(&'a mut self) -> Result<(), Error> {
+    async fn update(&mut self) -> Result<(), Error> {
         self.api.update().await
     }
 
-    fn get_markets(&self) -> &HashSet<Market<'a>> {
+    fn get_markets(&self) -> &HashSet<&'static Market> {
         self.api.get_markets()
     }
-    
-    async fn next(&mut self, market: &Market<'a>) -> Candlestick<'a> {
-        self.api.next(market).await
+
+    fn get_assets(&self) -> &HashSet<&'static Asset> {
+        self.api.get_assets()
     }
 
-    async fn last(&mut self, market: &Market<'a>) -> Candlestick<'a> {
-        self.api.last(market).await
+    async fn subscribe(&self, market: &'static Market, interval: Interval) -> Subscription<S> {
+        self.api.subscribe(market, interval).await
     }
 
-    async fn order(&mut self, order: Order<'a>) -> Result<(), Box<dyn std::error::Error>> {
-        Ok(())
+    async fn order(&mut self, order: Order) -> Result<OrderResponse, OrderError> {
+        Err(OrderError::Other(Error::ConnectionError))
     }
 }

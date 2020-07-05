@@ -1,33 +1,41 @@
 use crate::{Asset, Filter};
+use std::fmt;
 use std::hash::{Hash, Hasher};
 
-pub struct Market<'a> {
-    pub base: &'a Asset,
-    pub quote: &'a Asset,
-    filters: Vec<Box<dyn Filter>>
+#[derive(Debug)]
+pub struct Market {
+    pub base: &'static Asset,
+    pub quote: &'static Asset,
+    filters: Vec<Box<dyn Filter>>,
 }
 
-impl<'a> PartialEq for Market<'a> {
+impl fmt::Display for Market {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}{}", self.base, self.quote)
+    }
+}
+
+impl PartialEq for Market {
     fn eq(&self, other: &Self) -> bool {
         self.base == other.base && self.quote == other.quote
     }
 }
 
-impl<'a> Eq for Market<'a> {}
+impl Eq for Market {}
 
-impl<'a> Hash for Market<'a> {
+impl Hash for Market {
     fn hash<H: Hasher>(&self, state: &mut H) {
         self.base.hash(state);
         self.quote.hash(state);
     }
 }
 
-impl<'a> From<(&'a Asset, &'a Asset)> for Market<'a> {
-    fn from((base, quote): (&'a Asset, &'a Asset)) -> Market<'a> {
+impl From<(&'static Asset, &'static Asset)> for Market {
+    fn from((base, quote): (&'static Asset, &'static Asset)) -> Market {
         Market {
             base,
             quote,
-            filters: Vec::new()
+            filters: Vec::new(),
         }
     }
 }

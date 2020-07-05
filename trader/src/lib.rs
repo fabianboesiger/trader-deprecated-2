@@ -1,10 +1,10 @@
-mod trader;
 mod indicator;
 mod investor;
+mod trader;
 
-pub use trader::*;
 pub use indicator::*;
 pub use investor::*;
+pub use trader::*;
 
 #[cfg(test)]
 mod tests {
